@@ -49,6 +49,7 @@ public class GUI extends JFrame implements ActionListener {
 	
 	JButton login = new JButton();
 	JButton register = new JButton();
+	JButton confirm = new JButton();
 	
 	JTextField idNumber = new JTextField();	
 	JTextField rName = new JTextField();
@@ -111,6 +112,7 @@ public class GUI extends JFrame implements ActionListener {
 		
 		loginPanel.add(idNumber);
 		loginPanel.add(infoID);
+		loginPanel.add(confirm);
 		
 		idNumber.setVisible(true);
 		idNumber.setBounds(300,20,300,40);
@@ -165,8 +167,7 @@ public class GUI extends JFrame implements ActionListener {
 		registerPanel.add(rIDNumber);
 		registerPanel.add(rNameInfo);
 		registerPanel.add(rName);
-		
-		
+		registerPanel.add(confirm);
 		
 		//add to Frame
 		
@@ -185,10 +186,18 @@ public class GUI extends JFrame implements ActionListener {
 				if(idNumber.getText().isEmpty()) {
 					loginPanel.setVisible(false);
 				} else {
-					if(BankAccount.findId(idNumber.getText()) != null) {	
-						BankAccount acc = BankAccount.findId(idNumber.getText());
-						new userInterface(acc.getID(),acc.getName(),acc.getBalance());
-						this.dispose();
+					if(idNumber.getText().length()==4) {
+						if(BankAccount.findId(idNumber.getText()) != null) {	
+							BankAccount acc = BankAccount.findId(idNumber.getText());
+							new userInterface(acc.getID(),acc.getName(),acc.getBalance());
+							this.dispose();
+						}
+					}else {
+						JOptionPane.showMessageDialog(null,
+													  "Wprowadz 4 cyfrowy kod ID",
+													  "Nieprawid³owy kod",
+													  JOptionPane.ERROR_MESSAGE
+													  );
 					}
 					
 				}
