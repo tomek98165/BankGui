@@ -11,6 +11,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import java.awt.GridLayout;
+import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -53,7 +54,9 @@ public class GUI extends JFrame implements ActionListener {
 	JTextField rName = new JTextField();
 	
 	
-	
+	/*
+	 * Constructor create a frame
+	 */
 	
 	GUI(){
 		
@@ -92,12 +95,13 @@ public class GUI extends JFrame implements ActionListener {
 		//Buttons in main Panel
 		login.setText("Zaloguj siê");
 		login.addActionListener(this);
+		login.setFocusable(false);
 		login.setBounds(0,0,200,80);
 		
 		register.setText("Stwórz nowe konto");
 		register.addActionListener(this);
 		register.setBounds(0,80,200,80);
-		
+		register.setFocusable(false);
 		
 		
 		//Login Panel
@@ -140,7 +144,7 @@ public class GUI extends JFrame implements ActionListener {
 		
 		rIDNumber.setVisible(true);
 		rIDNumber.setBounds(300,80,300,80);
-		rIDNumber.setText("8888");
+		rIDNumber.setText("####");
 		rIDNumber.setVerticalAlignment(JLabel.CENTER);
 		rIDNumber.setHorizontalAlignment(JLabel.LEFT);
 		rIDNumber.setFont(new Font("MS Boli", Font.BOLD,50));
@@ -172,82 +176,6 @@ public class GUI extends JFrame implements ActionListener {
 		
 	}
 	
-	/*
-	 * Method create next ID number for new account
-	 */
-	
-	public static String file() throws FileNotFoundException {
-		Scanner file = new Scanner(new File("Account.txt"));
-		
-		ArrayList<String> daneKonta = new ArrayList<String>();
-		while(file.hasNextLine()) {
-			
-			daneKonta.add(file.nextLine());	
-		}
-		file.close();
-		String[] t = (daneKonta.get(daneKonta.size()-1)).split(":");
-		int x = Integer.parseInt(t[0]);
-		
-		return String.format("%04d", x+1);
-		
-		
-	}
-	
-	/*
-	 * Method find data for user
-	 * a is ID user
-	 * if ID user doesn't exist return null
-	 */
-	
-	public static String findID(String a) throws FileNotFoundException {
-		Scanner file = new Scanner(new File("Account.txt"));
-		String x;
-		while(file.hasNextLine()) {
-			x = file.nextLine();
-			if(a.equals(x.split(":")[0])) {
-				return x;
-			}
-		}
-		
-		return null;
-		
-	}
-	/*
-	 * Method add new user to database
-	 */
-	public static void createUser(String a, String b) throws IOException {
-		
-		
-		Scanner accounts = new Scanner(new File("Account.txt"));
-		ArrayList<String> acc = new ArrayList<String>();
-		while(accounts.hasNextLine()) {
-			acc.add(accounts.nextLine());
-		}
-		accounts.close();
-		String result = a + ":" + b + ":0";
-		
-		PrintWriter save = new PrintWriter("Account.txt");
-		
-		for(int i=0; i< acc.size(); i++) {
-			save.println(acc.get(i));
-		}
-		save.println(result);
-		save.close();
-		
-	}
-	
-	
-	/*
-	 * Method checks a String a is a number
-	 */
-	public static boolean isNumber(String a) {
-		try {
-			Integer.parseInt(a);
-		}catch(Exception e) {
-			return false;
-		}
-		return true;
-	}
 	
 	
 	@Override
@@ -257,35 +185,12 @@ public class GUI extends JFrame implements ActionListener {
 				if(idNumber.getText().isEmpty()) {
 					loginPanel.setVisible(false);
 				} else {
-					try {
-						if(idNumber.getText().length() != 4 || !isNumber(idNumber.getText())) {
-							JOptionPane.showMessageDialog(null,
-									"Nieprawid³owe ID podaj 4 cyfry", 
-									"Nieprawid³owe ID", 
-									JOptionPane.ERROR_MESSAGE
-									);
-						}
-						else if(findID(idNumber.getText()) == null){
-							JOptionPane.showMessageDialog(null,
-									"Nie ma w bazie u¿ytkownika o podanym ID", 
-									"Brak danych", 
-									JOptionPane.ERROR_MESSAGE
-									);
-							System.out.println(idNumber.getText()+isNumber(idNumber.getText()));
-							idNumber.setText("");
-						}else {
-							JOptionPane.showMessageDialog(null,
-									"Witaj "+ findID(idNumber.getText()).split(":")[1], 
-									"Hello", 
-									JOptionPane.INFORMATION_MESSAGE
-									);
-							this.dispose();
-							new userInterface(findID(idNumber.getText()).split(":")[0],findID(idNumber.getText()).split(":")[1],findID(idNumber.getText()).split(":")[2]);
-						}
-					} catch (FileNotFoundException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
+					if(BankAccount.findId(idNumber.getText()) != null) {	
+						BankAccount acc = BankAccount.findId(idNumber.getText());
+						new userInterface(acc.getID(),acc.getName(),acc.getBalance());
+						this.dispose();
 					}
+					
 				}
 			}else {
 				loginPanel.setVisible(true);
@@ -296,42 +201,24 @@ public class GUI extends JFrame implements ActionListener {
 		if(e.getSource()==register) {
 			if(registerPanel.isVisible()) {
 				if(rName.getText().isEmpty())
-					JOptionPane.showMessageDialog(null,
-							"Pole nazwa nie mo¿e byæ puste", 
-							"Puste pole", 
-							JOptionPane.ERROR_MESSAGE
-							);
+					JOptionPane.showMessageDialog(main, "Musisz Podaæ Swoje Imie", "Puste Pole", JOptionPane.ERROR_MESSAGE);
 				else {
-					if(
-							JOptionPane.showConfirmDialog(null,
-							"Czy na pewno chcesz utworzyæ u¿ytkownika "+rName.getText(), 
-							"Potwierdzenie", 
-							JOptionPane.YES_NO_OPTION
-							) == 0
-						) {
-					
-							try {
-								createUser(rIDNumber.getText(),rName.getText());
-								JOptionPane.showMessageDialog(null,
-										"Stworzono u¿ytkownika "+rName.getText(), 
-										"Stworzono U¿ytkownika", 
-										JOptionPane.INFORMATION_MESSAGE
-										);
-								rName.setText("");
-								registerPanel.setVisible(false);
-							} catch (IOException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							}
+					try {
+						BankAccount.createUser(rName.getText());
+						rName.setText("");
+						registerPanel.setVisible(false);
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
 					}
 				}
-				
 			}else {
-				registerPanel.setVisible(true);
 				
+				registerPanel.setVisible(true);
 				try {
-					rIDNumber.setText(file());
+					rIDNumber.setText(BankAccount.newID());
 				} catch (FileNotFoundException e1) {
+					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 				loginPanel.setVisible(false);
