@@ -186,7 +186,7 @@ public class BankAccount
 	 */
 	public static void createUser(String name) throws IOException {
 		if(JOptionPane.showConfirmDialog(null, 
-										 "Czy na pewno chcesz Stworzyæ u¿ytkownika o nazwie" +name,
+										 "Czy na pewno chcesz Stworzyæ u¿ytkownika o nazwie " + name,
 										 "Powtwierdzenie",
 										 JOptionPane.YES_NO_OPTION
 										 )==0) { 

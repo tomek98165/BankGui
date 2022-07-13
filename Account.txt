@@ -1,9 +1,10 @@
-0001:Magdalena:1600,00
+0001:Magdalena:4600,00
 0002:Rafal:114,00
-0003:Tomasz:0,00
+0003:Tomasz:20797,86
 0004:Andrzej:0,00
 0005:Janusz:0,00
 0006:Pawel:0,00
 0007:Andrzej:0,00
 0008:Andrzej:0,00
-0009:Bartek:0,00
+0009:Bartek:500,00
+0010:Roman:1000,00

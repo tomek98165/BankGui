@@ -1,31 +1,16 @@
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import java.awt.GridLayout;
-import java.awt.AWTEvent;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Random;
-import java.util.Scanner;
 public class GUI extends JFrame implements ActionListener {
 		
 	
@@ -49,7 +34,8 @@ public class GUI extends JFrame implements ActionListener {
 	
 	JButton login = new JButton();
 	JButton register = new JButton();
-	JButton confirm = new JButton();
+	JButton lConfirm = new JButton();
+	JButton rConfirm = new JButton();
 	
 	JTextField idNumber = new JTextField();	
 	JTextField rName = new JTextField();
@@ -107,12 +93,12 @@ public class GUI extends JFrame implements ActionListener {
 		
 		//Login Panel
 		loginPanel.setVisible(false);
-		loginPanel.setBounds(300,0,600,80);
+		loginPanel.setBounds(300,0,600,160);
 		loginPanel.setLayout(null);
 		
 		loginPanel.add(idNumber);
 		loginPanel.add(infoID);
-		loginPanel.add(confirm);
+		loginPanel.add(lConfirm);
 		
 		idNumber.setVisible(true);
 		idNumber.setBounds(300,20,300,40);
@@ -120,19 +106,26 @@ public class GUI extends JFrame implements ActionListener {
 		
 		infoID.setVisible(true);
 		infoID.setBounds(0,0,300,80);
-		infoID.setText("<html>Podaj swoje ID<br/>ponownie wciœnij Zaloguj siê</html>");
+		infoID.setText("<html>Podaj swoje ID<br/>Potem wciœnij Zaloguj siê</html>");
 		infoID.setVerticalAlignment(JLabel.CENTER);
 		infoID.setHorizontalAlignment(JLabel.CENTER);
 		infoID.setFont(new Font("MS Boli", Font.PLAIN,23));
 		
+		
+		lConfirm.setText("Zaloguj siê");
+		lConfirm.setVisible(true);
+		lConfirm.setBounds(400,90,200,50);
+		lConfirm.addActionListener(this);		
+		
+		
 		//register Panel
 		registerPanel.setVisible(false);
-		registerPanel.setBounds(300,0,600,240);
+		registerPanel.setBounds(300,0,600,540);
 		registerPanel.setLayout(null);
 		
 		rInfo.setVisible(true);
 		rInfo.setBounds(0,0,600,80);
-		rInfo.setText("<html>Po wprowadzeniu danych klikn¹æ ponownie Zarejestruj siê</html>");
+		rInfo.setText("<html>Po wprowadzeniu danych kliknij Zarejestruj siê</html>");
 		rInfo.setVerticalAlignment(JLabel.CENTER);
 		rInfo.setHorizontalAlignment(JLabel.CENTER);
 		rInfo.setFont(new Font("MS Boli", Font.PLAIN,23));
@@ -162,12 +155,17 @@ public class GUI extends JFrame implements ActionListener {
 		rName.setBounds(300,180,300,40);
 		rName.setFont(new Font("Comic Sans MS", Font.PLAIN, 23));
 		
+		rConfirm.setText("Stwórz konto");
+		rConfirm.setVisible(true);
+		rConfirm.setBounds(400,250,200,50);
+		rConfirm.addActionListener(this);
+		
 		registerPanel.add(rInfo);
 		registerPanel.add(rIDNumberInfo);
 		registerPanel.add(rIDNumber);
 		registerPanel.add(rNameInfo);
 		registerPanel.add(rName);
-		registerPanel.add(confirm);
+		registerPanel.add(rConfirm);
 		
 		//add to Frame
 		
@@ -182,56 +180,54 @@ public class GUI extends JFrame implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource()==login) {
-			if(loginPanel.isVisible()) {
-				if(idNumber.getText().isEmpty()) {
-					loginPanel.setVisible(false);
-				} else {
-					if(idNumber.getText().length()==4) {
-						if(BankAccount.findId(idNumber.getText()) != null) {	
-							BankAccount acc = BankAccount.findId(idNumber.getText());
-							new userInterface(acc.getID(),acc.getName(),acc.getBalance());
-							this.dispose();
-						}
-					}else {
-						JOptionPane.showMessageDialog(null,
-													  "Wprowadz 4 cyfrowy kod ID",
-													  "Nieprawid³owy kod",
-													  JOptionPane.ERROR_MESSAGE
-													  );
-					}
-					
-				}
-			}else {
+
 				loginPanel.setVisible(true);
 				registerPanel.setVisible(false);
 				
-			}
 		}
 		if(e.getSource()==register) {
-			if(registerPanel.isVisible()) {
-				if(rName.getText().isEmpty())
-					JOptionPane.showMessageDialog(main, "Musisz Podaæ Swoje Imie", "Puste Pole", JOptionPane.ERROR_MESSAGE);
-				else {
-					try {
-						BankAccount.createUser(rName.getText());
-						rName.setText("");
-						registerPanel.setVisible(false);
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
+			loginPanel.setVisible(false);
+			registerPanel.setVisible(true);
+			try {
+				rIDNumber.setText(BankAccount.newID());
+			} catch (FileNotFoundException e1) {
+				e1.printStackTrace();
+			}
+				
+			
+		}
+		
+		if(e.getSource()==lConfirm) {
+			if(idNumber.getText().length()==4) {
+				if(BankAccount.findId(idNumber.getText()) != null) {	
+					BankAccount acc = BankAccount.findId(idNumber.getText());
+					new userInterface(acc.getID(),acc.getName(),acc.getBalance());
+					this.dispose();
 				}
 			}else {
-				
-				registerPanel.setVisible(true);
+				JOptionPane.showMessageDialog(null,
+											  "Wprowadz 4 cyfrowy kod ID",
+											  "Nieprawid³owy kod",
+											  JOptionPane.ERROR_MESSAGE
+											  );
+			}
+			
+		}
+		if(e.getSource()==rConfirm) {
+			
+			if(rName.getText().isEmpty())
+				JOptionPane.showMessageDialog(main, "Musisz Podaæ Swoje Imie", "Puste Pole", JOptionPane.ERROR_MESSAGE);
+			else {
 				try {
-					rIDNumber.setText(BankAccount.newID());
-				} catch (FileNotFoundException e1) {
+					BankAccount.createUser(rName.getText());
+					rName.setText("");
+					registerPanel.setVisible(false);
+				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-				loginPanel.setVisible(false);
 			}
+			
 		}
 		
 	}

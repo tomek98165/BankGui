@@ -1,10 +1,8 @@
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -150,6 +148,7 @@ public class userInterface extends JFrame implements ActionListener{
 			addressIDInfo.setVisible(false);
 			confirm.setBounds(447,250,200,50);
 			amount.setName("deposit");
+			amount.setText("");
 			
 			
 		}
@@ -161,6 +160,7 @@ public class userInterface extends JFrame implements ActionListener{
 			addressIDInfo.setVisible(false);
 			confirm.setBounds(447,250,200,50);
 			amount.setName("withdraw");
+			amount.setText("");
 			
 
 		}
@@ -171,23 +171,24 @@ public class userInterface extends JFrame implements ActionListener{
 			addressIDInfo.setVisible(true);
 			confirm.setBounds(447,450,200,50);
 			amount.setName("transfer");
+			amount.setText("");
 		}
 		
 		if(e.getSource()==confirm) {
 			switch(amount.getName()) {
 				
 			case "withdraw":
-				acc.withdraw(amount.getText());
+				acc.withdraw(amount.getText().replace(',', '.'));
 				mainHeader.setText(String.format("Witaj %s twój aktualny stan konta wynosi: %.2f", acc.getName(), acc.getBalance()));
 				break;
 			case "deposit":
-				acc.deposit(amount.getText());
+				acc.deposit(amount.getText().replace(',', '.'));
 				mainHeader.setText(String.format("Witaj %s twój aktualny stan konta wynosi: %.2f", acc.getName(), acc.getBalance()));
 				break;
 			case "transfer":
 				acc.withdraw(Double.parseDouble(amount.getText()));
 				try {
-					acc.transfer(addressID.getText(), amount.getText());
+					acc.transfer(addressID.getText(), amount.getText().replace(',', '.'));
 					mainHeader.setText(String.format("Witaj %s twój aktualny stan konta wynosi: %.2f", acc.getName(), acc.getBalance()));
 				} catch (FileNotFoundException e1) {
 					e1.printStackTrace();
